@@ -364,6 +364,7 @@ frame61 = Frame(screen5)
 frame62 = Frame(screen5) 
 frame63 = Frame(screen5)
 frame64 = Frame(screen5)
+frame65 = Frame(screen5)
 
 l61 = Label(frame61, text = 'PARTIDA', font = 'verdana 16 bold', anchor='e')
 l61.pack()
@@ -407,6 +408,12 @@ def updateTable(frame, piloto1, piloto2):
         t = Table(frame64, c.piloto1, c.piloto2)    
         cont +=2    
 
+colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
+
+for i in range(len(colunas)):
+    coluna = Label(frame65, text = colunas[i], font=('Arial',16,'bold'))
+    coluna.grid(row=0, column = i, padx = 17)
+
 t = Table(frame64, c.piloto1, c.piloto2)
 
 b50 = Button(frame63, text = 'Voltar', width = 12, font = 'verdana 10 bold', command = circuitos_pilotos)
@@ -420,7 +427,8 @@ b62.grid(row = 11, column = 2)
 
 frame61.pack(pady = 10)
 frame62.pack(pady = 8)
-frame64.pack(pady = 8)
 frame63.pack(pady = 10)
+frame65.pack()
+frame64.pack(pady = 4)
 
 s.mainloop()

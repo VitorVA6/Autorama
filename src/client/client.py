@@ -101,7 +101,7 @@ class client():
         return
 
     def getTagPilot(self, nome, nome2):
-        file = open('pilots.json', 'r')
+        file = open('dataBase/pilots.json', 'r')
         linhas = file.readlines()
         for linha in linhas:
             b = json.loads(linha)

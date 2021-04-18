@@ -15,12 +15,12 @@ class api():
  
     def signupCars(self, tag, marca, cor):
         if(cor in self.cores and marca in self.marcas):
-            file = open('cars.json', 'r')
+            file = open('dataBase/cars.json', 'r')
             linhas = file.readlines()
             data = {'tag': tag, 'marca':marca, 'cor': cor}
             data_s = json.dumps(data)
             linhas.append(data_s + '\n')
-            file = open('cars.json', 'w')
+            file = open('dataBase/cars.json', 'w')
             file.writelines(linhas)
             file.close()
         else: 
@@ -28,7 +28,7 @@ class api():
 
     def checkCars(self, tag):
         a = False
-        file = open('cars.json', 'r')
+        file = open('dataBase/cars.json', 'r')
         linhas = file.readlines()
         for linha in linhas:
             b = json.loads(linha)
@@ -39,19 +39,19 @@ class api():
         return a
     
     def signupTeams(self, nome, nacionalidade): 
-        file = open('teams.json', 'r')
+        file = open('dataBase/teams.json', 'r')
         linhas = file.readlines()
         data = {'nome': nome, 'nacionalidade': nacionalidade, 'pontos':0}
         data_s = json.dumps(data)
         linhas.append(data_s + '\n')
-        file = open('teams.json', 'w')
+        file = open('dataBase/teams.json', 'w')
         file.writelines(linhas)
         file.close()
 
 
     def checkTeams(self, nome):
         a = False
-        file = open('teams.json', 'r')
+        file = open('dataBase/teams.json', 'r')
         linhas = file.readlines()
         for linha in linhas:
             b = json.loads(linha)
@@ -64,7 +64,7 @@ class api():
     def signupPilots(self, nome, equipe, carro):
         
         if(equipe != ''):
-            file = open('teams.json', 'r')
+            file = open('dataBase/teams.json', 'r')
             linhas = file.readlines()
             x = False
             for linha in linhas:
@@ -81,7 +81,7 @@ class api():
                 return
 
         if(carro != ''):
-            file = open('cars.json', 'r')
+            file = open('dataBase/cars.json', 'r')
             linhas = file.readlines()
             x = False
             for linha in linhas:
@@ -97,12 +97,12 @@ class api():
                 file.close()
                 return
   
-            file = open('pilots.json', 'r')
+            file = open('dataBase/pilots.json', 'r')
             linhas = file.readlines()         
             data = {'nome': nome, 'equipe': equipe, 'carro': carro}
             data_s = json.dumps(data)
             linhas.append(data_s + '\n')
-            file = open('pilots.json', 'w')
+            file = open('dataBase/pilots.json', 'w')
             file.writelines(linhas)
             file.close()
         else:
@@ -111,7 +111,7 @@ class api():
 
     def checkPilots(self, nome):
         a = False
-        file = open('pilots.json', 'r')
+        file = open('dataBase/pilots.json', 'r')
         linhas = file.readlines()
         for linha in linhas:
             b = json.loads(linha)
@@ -122,7 +122,7 @@ class api():
         return a
     
     def getPilots(self):
-        file = open('pilots.json', 'r')
+        file = open('dataBase/pilots.json', 'r')
         linhas = file.readlines()
         pilotsList = []
         for linha in linhas:
@@ -133,12 +133,12 @@ class api():
 
     def signupCircuits(self, nome, pais, recorde):
         if(pais in self.paises and recorde in self.rec2): 
-            file = open('circuits.json', 'r')
+            file = open('dataBase/circuits.json', 'r')
             linhas = file.readlines()
             data = {'nome': nome, 'pais': pais, 'recorde':recorde}
             data_s = json.dumps(data)
             linhas.append(data_s + '\n')
-            file = open('circuits.json', 'w')
+            file = open('dataBase/circuits.json', 'w')
             file.writelines(linhas)
             file.close()
         else:
@@ -147,7 +147,7 @@ class api():
 
     def checkCircuits(self, nome):
         a = False
-        file = open('circuits.json', 'r')
+        file = open('dataBase/circuits.json', 'r')
         linhas = file.readlines()
         for linha in linhas:
             b = json.loads(linha)
@@ -159,7 +159,7 @@ class api():
         return a
     
     def getCircuits(self):
-        file = open('circuits.json', 'r')
+        file = open('dataBase/circuits.json', 'r')
         linhas = file.readlines()
         circuitsList = []
         for linha in linhas:
@@ -169,7 +169,7 @@ class api():
 
     def signupRaces(self, duracao, voltas, pista, piloto1, piloto2):
         if(pista != ''):
-            file = open('circuits.json', 'r')
+            file = open('dataBase/circuits.json', 'r')
             linhas = file.readlines()
             x = False
             for linha in linhas:
@@ -186,12 +186,12 @@ class api():
                 return
 
         if(duracao in self.duracao and voltas in self.duracao):
-            file = open('race.json', 'r')
+            file = open('dataBase/race.json', 'r')
             linhas = file.readlines()
             data = {'ducarao': duracao, 'voltas': voltas, 'pista':pista, 'piloto1': piloto1, 'piloto2':piloto2}
             data_s = json.dumps(data)
             linhas.append(data_s + '\n')
-            file = open('race.json', 'w')
+            file = open('dataBase/race.json', 'w')
             file.writelines(linhas)
             file.close()
         else:

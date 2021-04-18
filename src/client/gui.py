@@ -43,13 +43,6 @@ def raspSettings():
     er8.insert(0, '5024')
     er7.insert(0, 'augusto.ddns.net')
 
-def escreve():
-    f = open('teste.txt', 'r')
-    linhas = f.readlines()
-    linhas.append(ec1.get()+'\n')
-    f = open('teste.txt', 'w')
-    f.writelines(linhas)
-
 def listaTags():
     ec1.delete(0, 80)
     tags = c.get()
@@ -96,7 +89,7 @@ def circuits():
         print('Preencha os campos corretamente!')
 
 def races():
-    file = open('race.json', 'r')
+    file = open('dataBase/race.json', 'r')
     linhas = file.readlines()
     if(e61.get()!='' and e62.get()!='' and len(linhas)==0):
         a.signupRaces(e61.get(), e62.get(), c60.get(), c61.get(), c62.get())        

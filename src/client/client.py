@@ -28,19 +28,19 @@ class client():
         return strn
 
     def get(self):
-        self.s.send(bytes('autorama/cars', 'utf-8'))
+        self.s.send(bytes('GET autorama/cars:', 'utf-8'))
         msg = self.s.recv(1024).decode()
         #tagsList = self.stringToTag(msg)
         return msg
 
     def post(self, st):
-        l = ['autorama/rfid/settings']
+        l = ['POST autorama/rfid/settings']
         l.append(st)
         x = ':'.join(l)
         self.s.send(bytes(x, 'utf-8'))
     
     def readerQualify(self):
-        self.s.send(bytes('startQualify:21', 'utf-8'))
+        self.s.send(bytes('GET autorama/startQualify:21', 'utf-8'))
         msg = self.s.recv(1024).decode()
         msg2 = msg
         while True:

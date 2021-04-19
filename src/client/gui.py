@@ -104,11 +104,12 @@ def sendRfid():
         print('Preencha o formulário corretamente')
 
 def qualify():
-    global settings
-    settings = a.getRaceSettings()
-    c.getTagPilot(settings['piloto1'], settings['piloto2'])
-    thread.start_new_thread(updateTable, (frame64, c.piloto1, c.piloto2))
-    thread.start_new_thread(c.readerQualify, (settings['duracao'],))
+    file = open('dataBase/race.json', 'r')
+    linhas = file.readlines()
+    if(len(linhas)==1):
+        createQualifyWidgets()        
+    else:
+        print('Cadastre uma partida primeiro!')
 
 s = Tk()
 s.title('Autorama')
@@ -395,21 +396,6 @@ c62 = ttk.Combobox(frame62, values = pilotos, width = 10)
 c62.set(pilotos[3])
 c62.grid(row = 3, sticky = W, pady = 10, column = 1)
 
-def updateTable(frame, piloto1, piloto2):
-    cont = 0
-    while cont < int(settings['duracao'])+2:
-        time.sleep(2)
-        t = Table(frame64, c.piloto1, c.piloto2)    
-        cont +=2    
-
-colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
-
-for i in range(len(colunas)):
-    coluna = Label(frame65, text = colunas[i], font=('Arial',16,'bold'))
-    coluna.grid(row=0, column = i, padx = 17)
-
-t = Table(frame64, c.piloto1, c.piloto2)
-
 b50 = Button(frame63, text = 'Voltar', width = 12, font = 'verdana 10 bold', command = circuitos_pilotos)
 b50.grid(row = 11, column = 0)
 
@@ -424,5 +410,52 @@ frame62.pack(pady = 8)
 frame63.pack(pady = 10)
 frame65.pack()
 frame64.pack(pady = 4)
+
+def createQualifyWidgets():
+    qualifyScreen = Frame(s)
+    qs1 = Frame(qualifyScreen)
+    qs2 = Frame(qualifyScreen)
+    qs3 = Frame(qualifyScreen)
+    qs4 = Frame(qualifyScreen)
+
+    global settings
+    settings = a.getRaceSettings()
+    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+
+    lq1 = Label(qs1, text = 'QUALIFICATÓRIA', font = 'verdana 16 bold')
+    lq1.pack()
+
+    lq2 = Label(qs4, text = 'Pista: '+settings['pista'], font = 'verdana 11 bold')
+    lq2.grid(row=0, column = 0)
+
+    lq3 = Label(qs4, text = 'Duração: '+settings['duracao'], font = 'verdana 11 bold')
+    lq3.grid(row = 0, column = 1)
+
+    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
+
+    for i in range(len(colunas)):
+        coluna = Label(qs2, text = colunas[i], font=('Arial',16,'bold'))
+        coluna.grid(row=0, column = i, padx = 17)
+
+    t = Table(qs3, c.piloto1, c.piloto2)
+
+    qs1.pack(pady = 10)
+    qs4.pack(pady = 8)
+    qs2.pack()
+    qs3.pack()
+    screen5.pack_forget()
+    qualifyScreen.pack()
+    thread.start_new_thread(updateTable, (qs3, c.piloto1, c.piloto2))
+    thread.start_new_thread(c.readerQualify, (settings['duracao'],))
+    
+
+def updateTable(frame, piloto1, piloto2):
+    cont = 0
+    while cont < int(settings['duracao'])+2:
+        time.sleep(2)
+        t = Table(frame, c.piloto1, c.piloto2)    
+        cont +=2    
+
+    
 
 s.mainloop()

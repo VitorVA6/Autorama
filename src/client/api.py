@@ -136,10 +136,11 @@ class api():
         settings = {'ducarao':'', 'voltas':'', 'piloto1':'', 'piloto2':''}
         for linha in linhas:
             b = json.loads(linha)
+            settings['pista'] = b['pista']
             settings['duracao'] = b['duracao']
             settings['voltas'] = b['voltas']
             settings['piloto1'] = b['piloto1']  
-            settings['piloto2'] = b['piloto2']      
+            settings['piloto2'] = b['piloto2']     
         file.close()     
         return settings
 

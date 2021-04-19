@@ -105,9 +105,10 @@ def sendRfid():
         print('Preencha o formulário corretamente')
 
 def qualify():
-    c.getTagPilot(c61.get(), c62.get())
+    settings = a.getRaceSettings()
+    c.getTagPilot(settings['piloto1'], settings['piloto2'])
     thread.start_new_thread(updateTable, (frame64, c.piloto1, c.piloto2))
-    thread.start_new_thread(c.readerQualify, ())
+    thread.start_new_thread(c.readerQualify, (settings['duracao'],))
 
 s = Tk()
 s.title('Autorama')

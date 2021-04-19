@@ -130,6 +130,19 @@ class api():
             pilotsList.append(b['nome'])
         return pilotsList
 
+    def getRaceSettings(self):
+        file = open('dataBase/race.json', 'r')
+        linhas = file.readlines()
+        settings = {'ducarao':'', 'voltas':'', 'piloto1':'', 'piloto2':''}
+        for linha in linhas:
+            b = json.loads(linha)
+            settings['duracao'] = b['duracao']
+            settings['voltas'] = b['voltas']
+            settings['piloto1'] = b['piloto1']  
+            settings['piloto2'] = b['piloto2']      
+        file.close()     
+        return settings
+
 
     def signupCircuits(self, nome, pais, recorde):
         if(pais in self.paises and recorde in self.rec2): 
@@ -188,7 +201,7 @@ class api():
         if(duracao in self.duracao and voltas in self.duracao):
             file = open('dataBase/race.json', 'r')
             linhas = file.readlines()
-            data = {'ducarao': duracao, 'voltas': voltas, 'pista':pista, 'piloto1': piloto1, 'piloto2':piloto2}
+            data = {'duracao': duracao, 'voltas': voltas, 'pista':pista, 'piloto1': piloto1, 'piloto2':piloto2}
             data_s = json.dumps(data)
             linhas.append(data_s + '\n')
             file = open('dataBase/race.json', 'w')

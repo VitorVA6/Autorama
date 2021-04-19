@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import _thread as thread
 #import mercury
 
-tags = ['carro1', 'carro2']
+tags = []
 rfid = []
 raceTags = []
 tagBuffer = []
@@ -51,6 +51,8 @@ def readerThread():
 def readerQualify(data):
     t = 0
     dataList = data.split(':')    
+    tags.append(dataList[2])
+    tags.append(dataList[3])
     info = str(datetime.fromtimestamp(time.time()))
     clientSocket.send(bytes(info, 'utf-8'))
     thread.start_new_thread(readerThread, ())
@@ -83,6 +85,7 @@ def readerQualify(data):
         #clientSocket.send(bytes(info, 'utf-8'))    
         t +=0.3
         #print(t)
+    tags.clear()
     clientSocket.send(bytes('q/q', 'utf-8'))
     return
 

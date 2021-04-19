@@ -39,8 +39,9 @@ class client():
         x = ':'.join(l)
         self.s.send(bytes(x, 'utf-8'))
     
-    def readerQualify(self):
-        self.s.send(bytes('GET autorama/startQualify:21', 'utf-8'))
+    def readerQualify(self, d):
+        route = 'GET autorama/startQualify:' + str(d) + ':' + self.piloto1['epc'] + ':' + self.piloto2['epc']
+        self.s.send(bytes(route, 'utf-8'))
         msg = self.s.recv(1024).decode()
         msg2 = msg
         while True:

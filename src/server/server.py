@@ -30,9 +30,9 @@ def tagToString(t):
         result = result + i + ':'
     return result
 
-def readerThread():
+def readerThread(tempo):
     c=0
-    while c<200:
+    while c<tempo*10:
         if(tags[0] not in raceTags):
             tagBuffer.append({'tag':'carro1', 'time': datetime.fromtimestamp(time.time()), 'sent':'false'})
             raceTags.append('carro1')
@@ -55,7 +55,7 @@ def readerQualify(data):
     tags.append(dataList[3])
     info = str(datetime.fromtimestamp(time.time()))
     clientSocket.send(bytes(info, 'utf-8'))
-    thread.start_new_thread(readerThread, ())
+    thread.start_new_thread(readerThread, (int(dataList[1]),))
     while t<int(dataList[1]): 
         time.sleep(0.1)
         if(len(tagBuffer)>0 and tagBuffer[0]['sent'] == 'false'):

@@ -88,13 +88,12 @@ def circuits():
     else: 
         print('Preencha os campos corretamente!')
 
-def races():
-    file = open('dataBase/race.json', 'r')
-    linhas = file.readlines()
-    if(e61.get()!='' and e62.get()!='' and len(linhas)==0):
+def races(): 
+    if(e61.get()!='' and e62.get()!=''):
         a.signupRaces(e61.get(), e62.get(), c60.get(), c61.get(), c62.get())        
     else: 
         print('Preencha os campos corretamente!')
+
 
 def sendRfid():
     if(er1.get()!='' and er1.get()!='' and er4.get()!=''):
@@ -105,6 +104,7 @@ def sendRfid():
         print('Preencha o formulário corretamente')
 
 def qualify():
+    global settings
     settings = a.getRaceSettings()
     c.getTagPilot(settings['piloto1'], settings['piloto2'])
     thread.start_new_thread(updateTable, (frame64, c.piloto1, c.piloto2))
@@ -397,7 +397,7 @@ c62.grid(row = 3, sticky = W, pady = 10, column = 1)
 
 def updateTable(frame, piloto1, piloto2):
     cont = 0
-    while cont < 25:
+    while cont < int(settings['duracao'])+2:
         time.sleep(2)
         t = Table(frame64, c.piloto1, c.piloto2)    
         cont +=2    

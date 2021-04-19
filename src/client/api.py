@@ -199,13 +199,10 @@ class api():
                 return
 
         if(duracao in self.duracao and voltas in self.duracao):
-            file = open('dataBase/race.json', 'r')
-            linhas = file.readlines()
             data = {'duracao': duracao, 'voltas': voltas, 'pista':pista, 'piloto1': piloto1, 'piloto2':piloto2}
             data_s = json.dumps(data)
-            linhas.append(data_s + '\n')
             file = open('dataBase/race.json', 'w')
-            file.writelines(linhas)
+            file.write(data_s)
             file.close()
         else:
             print("Dados incorretos")

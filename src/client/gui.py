@@ -426,10 +426,10 @@ def createQualifyWidgets():
     lq1.pack()
 
     lq2 = Label(qs4, text = 'Pista: '+settings['pista'], font = 'verdana 11 bold')
-    lq2.grid(row=0, column = 0)
+    lq2.grid(row=0, column = 0, padx = 20)
 
     lq3 = Label(qs4, text = 'Duração: '+settings['duracao'], font = 'verdana 11 bold')
-    lq3.grid(row = 0, column = 1)
+    lq3.grid(row = 0, column = 1, padx = 20)
 
     colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
 

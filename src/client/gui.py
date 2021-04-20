@@ -447,6 +447,7 @@ def createQualifyWidgets():
     qualifyScreen.pack()
     thread.start_new_thread(updateTable, (qs3, c.piloto1, c.piloto2))
     thread.start_new_thread(c.readerQualify, (settings['duracao'],))
+    thread.start_new_thread(counter, (qualifyScreen,))
     
 
 def updateTable(frame, piloto1, piloto2):
@@ -455,6 +456,27 @@ def updateTable(frame, piloto1, piloto2):
         time.sleep(2)
         t = Table(frame, c.piloto1, c.piloto2)    
         cont +=2    
+
+def counter(frame):
+    cont = 0
+    a = datetime.fromtimestamp(time.time())
+    while cont<int(settings['duracao']):
+        tempo = datetime.fromtimestamp(time.time()) - a
+        cont = str(tempo).split(':')
+        num = cont[2].split('.')
+        cont = float(cont[2])
+        f = Frame(frame)
+        lcounter = Label(f, text = 'TEMPO PERCORRIDO: '+num[0], font = 'verdana 14 bold')
+        lcounter.pack()
+        f.pack(pady = 15)
+        print(tempo)
+        time.sleep(1)
+        f.destroy()
+    f = Frame(frame)
+    lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
+    lcounter.pack(pady = 15)
+    f.pack()
+    
 
     
 

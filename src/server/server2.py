@@ -38,6 +38,7 @@ def readerThread():
     reader.set_read_plan([1], "GEN2", read_power=1500)
     reader.start_reading(lambda tag: tagFilter(tag.epc.decode(), datetime.fromtimestamp(tag.timestamp)))
     time.sleep(20)
+    reader.stop_reading()
 
 def readerQualify(data):
     t = 0

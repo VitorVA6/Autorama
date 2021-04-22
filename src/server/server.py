@@ -30,19 +30,19 @@ def tagToString(t):
         result = result + i + ':'
     return result
 
+def addBuffer(carro, tempo):
+    tagBuffer.append({'tag':carro, 'time': tempo, 'sent':'false'})
+    raceTags.append(carro)
+    print('adicionado1')
+    print(tagBuffer, raceTags)
+
 def readerThread(tempo):
     c=0
     while c<tempo*10:
         if(tags[0] not in raceTags):
-            tagBuffer.append({'tag':'carro1', 'time': datetime.fromtimestamp(time.time()), 'sent':'false'})
-            raceTags.append('carro1')
-            print('adicionado1')
-            print(tagBuffer, raceTags)
+            thread.start_new_thread(addBuffer, ('carro1', datetime.fromtimestamp(time.time())))
         if(tags[1] not in raceTags):
-            tagBuffer.append({'tag':'carro2', 'time':datetime.fromtimestamp(time.time())-timedelta(seconds=0.32), 'sent':'false'})
-            raceTags.append('carro2')
-            print('adicionado2')
-            print(tagBuffer, raceTags)
+            thread.start_new_thread(addBuffer, ('carro2', datetime.fromtimestamp(time.time())))
         time.sleep(0.1)
         c+=1
     print('Thread encerrada')

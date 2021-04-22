@@ -439,8 +439,8 @@ def createQualifyWidgets():
 
     t = Table(qs3, c.piloto1, c.piloto2)
 
-    qs1.pack(pady = 10)
-    qs4.pack(pady = 8)
+    qs1.pack(pady = 18)
+    qs4.pack(pady = 13)
     qs2.pack()
     qs3.pack()
     screen5.pack_forget()
@@ -475,9 +475,6 @@ def counter(frame):
     f = Frame(frame)
     lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
     lcounter.pack(pady = 15)
-    f.pack()
-    
-
-    
+    f.pack()   
 
 s.mainloop()

@@ -111,6 +111,16 @@ def qualify():
     else:
         print('Cadastre uma partida primeiro!')
 
+def startRace():
+    file = open('dataBase/race.json', 'r')
+    linhas = file.readlines()
+    if(len(linhas)==1):
+        settings = a.getRaceSettings()
+        c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+        thread.start_new_thread(c.readerRace, (settings['voltas'],))
+    else:
+        print('Cadastre uma partida primeiro!')
+
 s = Tk()
 s.title('Autorama')
 s.geometry('680x570')
@@ -404,6 +414,9 @@ b61.grid(row = 11, column = 1)
 
 b62 = Button(frame63, text = 'Qualify', width = 12, font = 'verdana 10 bold', command = qualify)
 b62.grid(row = 11, column = 2)
+
+b63 = Button(frame63, text = 'Corrida', width = 12, font = 'verdana 10 bold', command = startRace)
+b63.grid(row = 11, column = 3)
 
 frame61.pack(pady = 10)
 frame62.pack(pady = 8)

@@ -9,8 +9,8 @@ class client():
         self.port = ''
         self.host = ''
         self.msg = ''           
-        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': 100, 'bestTime': 100, 'pos': '', 'voltas': 0}
-        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': 100, 'bestTime': 100, 'pos': '', 'voltas': 0}
+        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100, 'pos': '', 'voltas': 0}
+        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100, 'pos': '', 'voltas': 0}
         
 
     def connect(self, porta, ip):
@@ -96,8 +96,8 @@ class client():
             elif info[1] == 'q':
                     break
         
-        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
-        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
+        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100.5, 'pos': '', 'voltas': 0}
+        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100.5, 'pos': '', 'voltas': 0}
         print('Fim da qualificação')
         return
 
@@ -119,3 +119,81 @@ class client():
     
     def clc(self):        
         self.s.send(bytes('q', 'utf-8'))
+
+    def readerRace(self, v):
+        route = 'GET autorama/startRace:' + str(v) + ':' + self.piloto1['epc'] + ':' + self.piloto2['epc']
+        self.s.send(bytes(route, 'utf-8'))
+        msg = self.s.recv(1024).decode()
+        msg2 = msg
+        while True:
+            info = self.s.recv(1024).decode().split('/')
+            if(info[0] == self.piloto1['epc']):
+                self.piloto1['voltas'] = int(info[2])
+                if(self.piloto1['voltas'] == 0):
+                    pass
+                else:
+                    aux = msg.split(':')                
+                    msg = info[1]
+                    aux2 = msg.split(':')
+                    r=timedelta(minutes=float(aux2[1]),seconds=float(aux2[2]))-\
+                    timedelta(minutes=float(aux[1]),seconds=float(aux[2]))        
+                    timeLap = str(r).split(':')          
+                    self.piloto1['time'] += float(timeLap[2])
+                    if(self.piloto1['voltas']==self.piloto2['voltas']):
+                        if (float(self.piloto1['time'])<float(self.piloto2['time'])):
+                            self.piloto1['pos'] = '1'
+                            self.piloto2['pos'] = '2'
+                        else:
+                            self.piloto1['pos'] = '2'
+                            self.piloto2['pos'] = '1'
+                    elif(self.piloto1['voltas']>self.piloto2['voltas']):
+                        self.piloto1['pos'] = '1'
+                        self.piloto2['pos'] = '2'
+                    else:
+                        self.piloto1['pos'] = '2'
+                        self.piloto2['pos'] = '1'
+
+                    print('Piloto: ' + self.piloto1['nome'] + '  Equipe: ' + self.piloto1['equipe'] + \
+                    '  Tempo: ' + str(self.piloto1['time']) + \
+                    '  Voltas: '+str(self.piloto1['voltas'])+'  EPC: ' + self.piloto1['epc'] + \
+                    '  Pos: ' + self.piloto1['pos'])
+                
+            elif(info[0] == self.piloto2['epc']):
+                self.piloto2['voltas'] = int(info[2])
+                if(self.piloto2['voltas']==0):
+                    pass
+                else:    
+                    aux = msg2.split(':')                
+                    msg2 = info[1]
+                    aux2 = msg2.split(':')
+                    r=timedelta(minutes=float(aux2[1]),seconds=float(aux2[2]))-\
+                    timedelta(minutes=float(aux[1]),seconds=float(aux[2]))        
+                    timeLap = str(r).split(':')
+                    self.piloto2['time'] += float(timeLap[2])
+                    if(self.piloto1['voltas']==self.piloto2['voltas']):
+                        if (float(self.piloto1['time'])<float(self.piloto2['time'])):
+                            self.piloto1['pos'] = '1'
+                            self.piloto2['pos'] = '2'
+                        else:
+                            self.piloto1['pos'] = '2'
+                            self.piloto2['pos'] = '1'
+                    elif(self.piloto1['voltas']>self.piloto2['voltas']):
+                        self.piloto1['pos'] = '1'
+                        self.piloto2['pos'] = '2'
+                    else:
+                        self.piloto1['pos'] = '2'
+                        self.piloto2['pos'] = '1'
+
+
+                    print('Piloto: ' + self.piloto2['nome'] + '  Equipe: ' + self.piloto2['equipe'] + \
+                    '  Tempo: ' + str(self.piloto2['time']) + \
+                    '  Voltas: '+str(self.piloto2['voltas'])+'  EPC: ' + self.piloto2['epc'] +\
+                    '  Pos: ' + self.piloto2['pos'])
+                
+            elif info[1] == 'q':
+                    break
+        
+        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
+        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
+        print('Fim da Corrida')
+        return

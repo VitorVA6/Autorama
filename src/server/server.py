@@ -9,10 +9,72 @@ rfid = []
 raceTags = []
 tagBuffer = []
 restAPI = {'method':'', 'route':''}
+r = True
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 5022))
 s.listen(5)
+
+def addBufferRace(carro, tempo, volta):
+    tagBuffer.append({'tag':carro, 'time': tempo, 'sent':'false', 'volta': volta})
+    raceTags.append(carro)
+    print('adicionado1')
+    print(tagBuffer, raceTags)
+
+def readerThreadRfid(voltas):
+    voltaCarro1 = -1
+    voltaCarro2 = -1
+    c=0
+    while (r):
+        if(tags[0] not in raceTags):
+            voltaCarro1+=1
+            thread.start_new_thread(addBufferRace, ('carro1', datetime.fromtimestamp(time.time()), voltaCarro1))
+        if(tags[1] not in raceTags):
+            voltaCarro2+=1
+            thread.start_new_thread(addBufferRace, ('carro2', datetime.fromtimestamp(time.time()), voltaCarro2))
+        time.sleep(0.1)
+        c+=1
+    print('Thread encerrada')
+    return
+
+def readerRace(data):
+    global r
+    t = 0
+    dataList = data.split(':')    
+    tags.append(dataList[2])
+    tags.append(dataList[3])
+    info = str(datetime.fromtimestamp(time.time()))
+    clientSocket.send(bytes(info, 'utf-8'))
+    thread.start_new_thread(readerThreadRfid, (int(dataList[1]),))
+    while True: 
+        time.sleep(0.2)
+        if(len(tagBuffer)>0 and tagBuffer[0]['sent'] == 'false'):
+            info =  raceTags[0]+ '/'+ str(tagBuffer[0]['time']) + '/' + str(tagBuffer[0]['volta'])
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado1')
+            tagBuffer[0]['sent'] = 'true'
+        time.sleep(0.3)
+        if(len(tagBuffer)>1 and tagBuffer[1]['sent'] == 'false'):
+            info =  raceTags[1]+ '/'+ str(tagBuffer[1]['time']) + '/' + str(tagBuffer[1]['volta'])
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado2')
+            tagBuffer[1]['sent'] = 'true'
+        
+        if (len(tagBuffer)>0):
+            time1 = datetime.fromtimestamp(time.time()) - tagBuffer[0]['time']
+            time2 = timedelta(seconds = 6)
+            if(time1 > time2):
+                del(tagBuffer[0])
+                del(raceTags[0])
+                print('deletado')
+        
+        if (len(tagBuffer)>1):
+            if(tagBuffer[0]['volta']>=int(dataList[1]) and tagBuffer[1]['volta']>=int(dataList[1])):
+                r = False
+                break
+    tags.clear()
+    clientSocket.send(bytes('q/q', 'utf-8'))
+    return
 
 def methodIdentifier(data):
     global restAPI
@@ -105,6 +167,8 @@ def get(data):
         clientSocket.send(bytes(tags[0], 'utf-8'))
     elif (data[0] == 'autorama/startQualify'):
         readerQualify(restAPI['route'])
+    elif (data[0] == 'autorama/startRace'):
+        readerRace(restAPI['route'])
     else: 
         return
 

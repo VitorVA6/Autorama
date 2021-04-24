@@ -6,13 +6,13 @@ class Table:
     def __init__(self,root, p1, p2):
         if p1['pos'] == '1':
             lst = [
-                (p1['pos'], p1['nome'], p1['equipe'], str(p1['time'])[0:6], str(p1['bestTime'])[1:7], p1['voltas']-1),
-                (p2['pos'], p2['nome'], p2['equipe'], str(p2['time'])[0:6], str(p2['bestTime'])[1:7], p2['voltas']-1),
+                (p1['pos'], p1['nome'], p1['equipe'], str(p1['time'])[0:6], str(p1['bestTime'])[1:7], p1['voltas']),
+                (p2['pos'], p2['nome'], p2['equipe'], str(p2['time'])[0:6], str(p2['bestTime'])[1:7], p2['voltas']),
                 ]
         else:
             lst = [                
-                (p2['pos'], p2['nome'], p2['equipe'], str(p2['time'])[0:6], str(p2['bestTime'])[1:7], p2['voltas']-1),
-                (p1['pos'], p1['nome'], p1['equipe'], str(p1['time'])[0:6], str(p1['bestTime'])[1:7], p1['voltas']-1),
+                (p2['pos'], p2['nome'], p2['equipe'], str(p2['time'])[0:6], str(p2['bestTime'])[1:7], p2['voltas']),
+                (p1['pos'], p1['nome'], p1['equipe'], str(p1['time'])[0:6], str(p1['bestTime'])[1:7], p1['voltas']),
                 ]
 
         total_rows = len(lst)

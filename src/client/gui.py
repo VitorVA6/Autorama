@@ -506,7 +506,10 @@ def updateTable(frame, piloto1, piloto2):
         time.sleep(2)
         t = Table(frame, c.piloto1, c.piloto2)    
         cont +=2    
-    print('Update table qualify is end')
+
+def raceReturn():
+    raceScreen.destroy()
+    screen5.pack()
 
 def updateRaceTable(frame, piloto1, piloto2):
     while True:
@@ -514,7 +517,10 @@ def updateRaceTable(frame, piloto1, piloto2):
         t = Table(frame, c.piloto1, c.piloto2)    
         if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])):
             break
-    print('update table is')
+    
+    butR = Button(raceScreen, text = 'Voltar', width = 12, command = raceReturn, font = 'verdana 10 bold')
+    butR.pack(pady = 15)
+    print('update table is')    
 
 def qualifyReturn():
     qualifyScreen.destroy()
@@ -538,7 +544,7 @@ def counter(frame):
     f = Frame(frame)
     lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
     lcounter.pack(pady = 15)
-    butV = Button(f, text = 'Voltar', command = qualifyReturn)
+    butV = Button(f, text = 'Voltar', command = qualifyReturn, width =12, font = 'verdana 10 bold')
     butV.pack()
     f.pack()   
 

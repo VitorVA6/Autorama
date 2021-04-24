@@ -47,9 +47,9 @@ class client():
         while True:
             info = self.s.recv(1024).decode().split('/')
             if(info[0] == self.piloto1['epc']):
+                self.piloto1['voltas'] = int(info[2])
                 if(self.piloto1['voltas'] == 0):
-                    self.piloto1['voltas'] +=1
-                    msg = info[1]
+                    pass
                 else:    
                     aux = msg.split(':')                
                     msg = info[1]
@@ -68,11 +68,11 @@ class client():
                     '  Tempo: ' + self.piloto1['time'] + '  Record: ' + self.piloto1['bestTime'] + \
                     '  Voltas: '+str(self.piloto1['voltas'])+'  EPC: ' + self.piloto1['epc'] + \
                     '  Pos: ' + self.piloto1['pos'])
-                    self.piloto1['voltas'] += 1
                 
             elif(info[0] == self.piloto2['epc']):
-                if(self.piloto2['voltas']==0):
-                    self.piloto2['voltas'] +=1
+                self.piloto2['voltas'] = int(info[2])
+                if(self.piloto2['voltas'] == 0):
+                    pass
                 else:    
                     aux = msg2.split(':')                
                     msg2 = info[1]
@@ -91,7 +91,6 @@ class client():
                     '  Tempo: ' + self.piloto2['time'] + '  Record: ' + self.piloto2['bestTime'] + \
                     '  Voltas: '+str(self.piloto2['voltas'])+'  EPC: ' + self.piloto2['epc'] +\
                     '  Pos: ' + self.piloto2['pos'])
-                    self.piloto2['voltas'] += 1
                 
             elif info[1] == 'q':
                     break

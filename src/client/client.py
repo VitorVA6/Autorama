@@ -193,7 +193,5 @@ class client():
             elif info[1] == 'q':
                     break
         
-        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
-        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': '', 'bestTime': 100.5, 'pos': '', 'voltas': 0}
         print('Fim da Corrida')
         return

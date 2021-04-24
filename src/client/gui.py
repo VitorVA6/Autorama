@@ -115,11 +115,47 @@ def startRace():
     file = open('dataBase/race.json', 'r')
     linhas = file.readlines()
     if(len(linhas)==1):
-        settings = a.getRaceSettings()
-        c.getTagPilot(settings['piloto1'], settings['piloto2'])    
-        thread.start_new_thread(c.readerRace, (settings['voltas'],))
+        createRaceWidgets()
     else:
         print('Cadastre uma partida primeiro!')
+
+def createRaceWidgets():
+    global raceScreen
+    raceScreen = Frame(s)    
+    rs1 = Frame(raceScreen)
+    rs2 = Frame(raceScreen)
+    rs3 = Frame(raceScreen)
+    rs4 = Frame(raceScreen)
+
+    global settings
+    settings = a.getRaceSettings()
+    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+
+    lr1 = Label(rs1, text = 'CORRIDA', font = 'verdana 16 bold')
+    lr1.pack()
+
+    lr2 = Label(rs4, text = 'Pista: '+settings['pista'], font = 'verdana 11 bold')
+    lr2.grid(row=0, column = 0, padx = 20)
+
+    lr3 = Label(rs4, text = 'Nº de Voltas: '+settings['voltas'], font = 'verdana 11 bold')
+    lr3.grid(row = 0, column = 1, padx = 20)
+
+    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
+
+    for i in range(len(colunas)):
+        coluna = Label(rs2, text = colunas[i], font=('Arial',16,'bold'))
+        coluna.grid(row=0, column = i, padx = 17)
+
+    t = Table(rs3, c.piloto1, c.piloto2)
+
+    rs1.pack(pady = 18)
+    rs4.pack(pady = 13)
+    rs2.pack()
+    rs3.pack()
+    screen5.pack_forget()
+    raceScreen.pack()
+    thread.start_new_thread(updateRaceTable, (rs3, c.piloto1, c.piloto2))
+    thread.start_new_thread(c.readerRace, (settings['voltas'],))
 
 s = Tk()
 s.title('Autorama')
@@ -425,7 +461,8 @@ frame65.pack()
 frame64.pack(pady = 4)
 
 def createQualifyWidgets():
-    qualifyScreen = Frame(s)
+    global qualifyScreen
+    qualifyScreen = Frame(s)    
     qs1 = Frame(qualifyScreen)
     qs2 = Frame(qualifyScreen)
     qs3 = Frame(qualifyScreen)
@@ -469,6 +506,19 @@ def updateTable(frame, piloto1, piloto2):
         time.sleep(2)
         t = Table(frame, c.piloto1, c.piloto2)    
         cont +=2    
+    print('Update table qualify is end')
+
+def updateRaceTable(frame, piloto1, piloto2):
+    while True:
+        time.sleep(2)
+        t = Table(frame, c.piloto1, c.piloto2)    
+        if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])):
+            break
+    print('update table is')
+
+def qualifyReturn():
+    qualifyScreen.destroy()
+    screen5.pack()
 
 def counter(frame):
     cont = 0
@@ -488,6 +538,8 @@ def counter(frame):
     f = Frame(frame)
     lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
     lcounter.pack(pady = 15)
+    butV = Button(f, text = 'Voltar', command = qualifyReturn)
+    butV.pack()
     f.pack()   
 
 s.mainloop()

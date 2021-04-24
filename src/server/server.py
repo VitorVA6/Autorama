@@ -47,13 +47,13 @@ def readerRace(data):
     clientSocket.send(bytes(info, 'utf-8'))
     thread.start_new_thread(readerThreadRfid, (int(dataList[1]),))
     while True: 
-        time.sleep(0.2)
+        time.sleep(0.1)
         if(len(tagBuffer)>0 and tagBuffer[0]['sent'] == 'false'):
             info =  raceTags[0]+ '/'+ str(tagBuffer[0]['time']) + '/' + str(tagBuffer[0]['volta'])
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado1')
             tagBuffer[0]['sent'] = 'true'
-        time.sleep(0.3)
+        time.sleep(0.2)
         if(len(tagBuffer)>1 and tagBuffer[1]['sent'] == 'false'):
             info =  raceTags[1]+ '/'+ str(tagBuffer[1]['time']) + '/' + str(tagBuffer[1]['volta'])
             clientSocket.send(bytes(info, 'utf-8')) 
@@ -129,7 +129,7 @@ def readerQualify(data):
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado1')
             tagBuffer[0]['sent'] = 'true'
-        time.sleep(0.3)
+        time.sleep(0.2)
         if(len(tagBuffer)>1 and tagBuffer[1]['sent'] == 'false'):
             info =  raceTags[1]+ '/'+ str(tagBuffer[1]['time'])+ '/'+ tagBuffer[1]['volta']
             clientSocket.send(bytes(info, 'utf-8')) 

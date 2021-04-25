@@ -34,12 +34,13 @@ def readerThreadRfid(voltas):
             thread.start_new_thread(addBufferRace, ('carro2', datetime.fromtimestamp(time.time()), voltaCarro2))
         time.sleep(0.1)
         c+=1
-    print('Thread encerrada')
+    print('Thread Rfid encerrada')
     return
 
 def readerRace(data):
     global r
     t = 0
+    r = True
     dataList = data.split(':')    
     tags.append(dataList[2])
     tags.append(dataList[3])
@@ -53,7 +54,7 @@ def readerRace(data):
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado1')
             tagBuffer[0]['sent'] = 'true'
-        time.sleep(0.2)
+        
         if(len(tagBuffer)>1 and tagBuffer[1]['sent'] == 'false'):
             info =  raceTags[1]+ '/'+ str(tagBuffer[1]['time']) + '/' + str(tagBuffer[1]['volta'])
             clientSocket.send(bytes(info, 'utf-8')) 
@@ -70,6 +71,9 @@ def readerRace(data):
         
         if (len(tagBuffer)>1):
             if(tagBuffer[0]['volta']>=int(dataList[1]) and tagBuffer[1]['volta']>=int(dataList[1])):
+                tagBuffer.clear()
+                raceTags.clear()
+                tags.clear()
                 r = False
                 break
     tags.clear()
@@ -128,14 +132,13 @@ def readerQualify(data):
             info =  raceTags[0]+ '/'+ str(tagBuffer[0]['time'])+ '/'+ tagBuffer[0]['volta']
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado1')
-            tagBuffer[0]['sent'] = 'true'
-        time.sleep(0.2)
+            tagBuffer[0]['sent'] = 'true'        
         if(len(tagBuffer)>1 and tagBuffer[1]['sent'] == 'false'):
             info =  raceTags[1]+ '/'+ str(tagBuffer[1]['time'])+ '/'+ tagBuffer[1]['volta']
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado2')
             tagBuffer[1]['sent'] = 'true'
-        
+        time.sleep(0.1)
         if (len(tagBuffer)>0):
             time1 = datetime.fromtimestamp(time.time()) - tagBuffer[0]['time']
             time2 = timedelta(seconds = 6)
@@ -149,7 +152,7 @@ def readerQualify(data):
         #time.sleep(0.4)        
         #info =  tags[0]+ '/'+ str(datetime.fromtimestamp(time.time()))
         #clientSocket.send(bytes(info, 'utf-8'))    
-        t +=0.3
+        t +=0.2
         #print(t)
     tags.clear()
     clientSocket.send(bytes('q/q', 'utf-8'))

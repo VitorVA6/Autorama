@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 import _thread as thread
 import mercury
 
+#Variáveis globais responsáveis por armazenar informações das tags da corrida, configurações do RFID,
+#dados do protocolo rest, além de variáveis de controle de laçoes while
 tags = []
 rfid = []
 raceTags = []
@@ -13,16 +15,19 @@ r = True
 voltaCarro1 = -1
 voltaCarro2 = -1    
 
+#Instância do server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 5024))
 s.listen(5)
 
+#Adiciona dados de um determinado carro ao buffer
 def addBufferRace(carro, tempo, volta):
     tagBuffer.append({'tag':carro, 'time': tempo, 'sent':'false', 'volta': volta})
     raceTags.append(carro)
     print('adicionado1')
     print(tagBuffer, raceTags)
 
+#Função que ordena o raspberry realizar leituras consecutivas em um daterminado intervalo de tempo
 def readerThreadRfid():
     global reader
     reader = mercury.Reader("tmr:///dev/ttyUSB0", baudrate=230400)
@@ -33,6 +38,8 @@ def readerThreadRfid():
     print('Thread encerrada')
     return
 
+#Função que vai enviar para o cliente dados obtidos pelo leito periodicamente,
+#sendo o consumidor da corrida
 def readerRace(data):
     global voltaCarro1
     global voltaCarro2
@@ -43,7 +50,10 @@ def readerRace(data):
     tags.append(dataList[3])
     info = str(datetime.fromtimestamp(time.time()))
     clientSocket.send(bytes(info, 'utf-8'))
+    #inicia a thread do produtor
     thread.start_new_thread(readerThreadRfid, ())
+    #esse looping aliado aos 'ifs', realiza a remoção de dados do buffer a partir do tempo mínimo da volta
+    # além de realizar envios dos dados 
     while True: 
         time.sleep(0.2)
         if(len(tagBuffer)>0 and tagBuffer[0]['sent'] == 'false'):
@@ -74,6 +84,8 @@ def readerRace(data):
     clientSocket.send(bytes('q/q', 'utf-8'))
     return
 
+#Método que identifica se a requisição feita pelo cliente é um GET ou um POST,
+#lém de identificar a url e armazenar esses dados num dicionário
 def methodIdentifier(data):
     global restAPI
     data = data.split(' ')
@@ -97,13 +109,14 @@ def tagToString(t):
         result = result + i + ':'
     return result
 
+#Adiciona dados de um determinado carro ao buffer, durante a qualificatória e a corrida
 def addBuffer(carro, tempo, volta):
     tagBuffer.append({'tag':carro, 'time': tempo, 'sent':'false', 'volta':volta})
     raceTags.append(carro)
     print('adicionado1')
     print(tagBuffer, raceTags)
 
-
+#Função responsável por filtras quais tags e quando as tags devem ser armazenadas no buffer
 def tagFilter(tag, tempo):
     global voltaCarro1
     global voltaCarro2
@@ -114,6 +127,8 @@ def tagFilter(tag, tempo):
         voltaCarro2+=1
         addBuffer(tags[1], tempo, voltaCarro2)  
 
+#Função que recebe o tempo de duração da qualificatória como parâmetro, instancia o leitor
+# e realiza leituras consecutivas até o fim da qualificatória
 def readerThread(tempo):    
     reader = mercury.Reader("tmr:///dev/ttyUSB0", baudrate=230400)
     reader.set_region("NA2")
@@ -122,6 +137,7 @@ def readerThread(tempo):
     time.sleep(tempo)
     reader.stop_reading()
 
+#Função idêntica ao Consumidor da corrida, explicado acima
 def readerQualify(data):
     t = 0
     dataList = data.split(':')    
@@ -164,7 +180,8 @@ def readerQualify(data):
     return
 
 
-
+#Função responsável por gerenciar as funções pertencentes ao método GET, sempre que o cliente enviar 
+#uma requisição get, essa função será chamada e determinará qual ação tomar a depender a url
 def get(data):
     global tags
     global restAPI
@@ -184,6 +201,7 @@ def get(data):
     else: 
         return
 
+#Função que gerencia as requisições POST, no entanto só existe uma no server
 def post(data):
     dataList = data.split(':')
     if (dataList[0] == 'autorama/rfid/settings'):
@@ -197,6 +215,7 @@ def post(data):
     else: 
         return
 
+#Looping principal do server, responsável por aguardar um cliente se conectar
 while True: 
     clientSocket, address = s.accept()
     print('Conexão estabelecida com: ', address)

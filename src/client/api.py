@@ -1,6 +1,8 @@
 import json
 
+#Classe responsável por realizar os cadastros nos arquivos json
 class api():
+#construtor da classe
     def __init__(self):
         self.paises = ['Brasil', 'Alemanha', 'França', 'Itália', 'Estados Unidos', 'Argentina', 'Áustria', 'Austrália', 'Finlândia', 'Inglaterra']
         self.marcas = ['Ford', 'Ferrari', 'McLaren', 'Mercedes', 'Honda', 'Renault', 'BMW', 'Toyota', 'Maserati']
@@ -13,6 +15,7 @@ class api():
         self.duracao = list(range(1,200))
         self.duracao = str(self.duracao)
  
+#Função que recebe os dados do carro e faz o cadastro do mesmo no arquivo cars.json
     def signupCars(self, tag, marca, cor):
         if(cor in self.cores and marca in self.marcas):
             file = open('dataBase/cars.json', 'r')
@@ -26,6 +29,7 @@ class api():
         else: 
             print('Dados preenchidos incorretamente')
 
+#Função que verifica se já existe um carro com uma determinada tag cadastrado
     def checkCars(self, tag):
         a = False
         file = open('dataBase/cars.json', 'r')
@@ -37,7 +41,8 @@ class api():
             else:
                 a = False
         return a
-    
+
+#Função que recebe dados de um time e faz seu cadastro no arquivo teams.json
     def signupTeams(self, nome, nacionalidade): 
         file = open('dataBase/teams.json', 'r')
         linhas = file.readlines()
@@ -48,7 +53,7 @@ class api():
         file.writelines(linhas)
         file.close()
 
-
+#Função que cerifica se já existe um time com um determinado nome cadastrado
     def checkTeams(self, nome):
         a = False
         file = open('dataBase/teams.json', 'r')
@@ -61,6 +66,7 @@ class api():
                 a = False
         return a
 
+#Função que recebe dados de um piloto e faz seu cadastro no arquivo pilots.json
     def signupPilots(self, nome, equipe, carro):
         
         if(equipe != ''):
@@ -109,6 +115,7 @@ class api():
             print('Dados preenchidos incorretamente')
             return
 
+#Função que verifica se já existe um piloto com um determinado nome cadastrado
     def checkPilots(self, nome):
         a = False
         file = open('dataBase/pilots.json', 'r')
@@ -121,6 +128,7 @@ class api():
                 a = False
         return a
     
+#Função retorn os nomes dos pilotos que participarão da partida
     def getPilots(self):
         file = open('dataBase/pilots.json', 'r')
         linhas = file.readlines()
@@ -130,6 +138,8 @@ class api():
             pilotsList.append(b['nome'])
         return pilotsList
 
+#Função que retorna uma lista contendo as informações da corrida,
+#sendo elas os pilotos, ducaração, numero de voltas e a pista
     def getRaceSettings(self):
         file = open('dataBase/race.json', 'r')
         linhas = file.readlines()
@@ -144,7 +154,7 @@ class api():
         file.close()     
         return settings
 
-
+#Função responsável por receber dados de um circuito e cadastrá-lo
     def signupCircuits(self, nome, pais, recorde):
         if(pais in self.paises and recorde in self.rec2): 
             file = open('dataBase/circuits.json', 'r')
@@ -159,6 +169,7 @@ class api():
             print('Preencha os dados corretamente')
             return
 
+#Função que verifica se já existe um circuito com um determinado nome cadastrado
     def checkCircuits(self, nome):
         a = False
         file = open('dataBase/circuits.json', 'r')
@@ -171,7 +182,8 @@ class api():
                 a = False
         file.close()
         return a
-    
+
+#Função que retorna uma lista contendo os circuitos cadastrados
     def getCircuits(self):
         file = open('dataBase/circuits.json', 'r')
         linhas = file.readlines()
@@ -181,6 +193,7 @@ class api():
             circuitsList.append(b['nome'])
         return circuitsList
 
+#Função que recebe os dados de uma corrida e a cadastra
     def signupRaces(self, duracao, voltas, pista, piloto1, piloto2):
         if(pista != ''):
             file = open('dataBase/circuits.json', 'r')

@@ -4,7 +4,10 @@ from client import *
 from api import *
 import _thread as thread
 from tabela import Table
+from raceTable import RaceTable
 
+#As funções abaixo são responsáveis por transitar entre as telas, sendo acionadas pelos
+#botões "Voltar" e "Avançar"
 def rfid_carros():
     screen1.pack_forget()
     screen2.pack()
@@ -21,6 +24,8 @@ def circuitos_pilotos():
     screen5.pack_forget()
     screen2.pack()
 
+#Essa função vai preencher os TextInputs de configuração do RFID como antena, região e etc, com
+#as configurações compatíveis e com melhor desenpenho
 def recomendado():
     er1.delete(0, 20)
     er2.delete(0, 20)
@@ -34,20 +39,25 @@ def recomendado():
     er4.insert(0, 'GEN2')
     er6.insert(0, '1100')
 
+#Essa função recebe um IP e uma porta do server e faz a conexão 
 def connectServer():
     c.connect(er8.get(), er7.get())
 
+#Essa função preenche os TextInputs com a porta e o IP do rasp
 def raspSettings():
     er8.delete(0, 20)
     er7.delete(0, 20)
     er8.insert(0, '5024')
     er7.insert(0, 'augusto.ddns.net')
 
+#Essa função faz uma solicitação de leitura de Tag ao server
 def listaTags():
     ec1.delete(0, 80)
     tags = c.get()
     ec1.insert(0, tags)
 
+#Função responsável cadastrar carros no arquivo cars.json
+#caso os dados tenham sido preenchidos corretamente
 def cars():
     if(ec1.get()!='' and cc1.get()!='' and cc2.get()!=''):
         ret = a.checkCars(ec1.get())
@@ -58,6 +68,8 @@ def cars():
     else: 
         print('Preencha os campos corretamente!')
 
+#Função responsável por cadastrar uma equipe no arquivo teams.json
+#caso os dados tenham sido preenchidos corretamente
 def teams():
     if(ee1.get()!=''):
         ret = a.checkTeams(ee1.get())
@@ -68,6 +80,8 @@ def teams():
     else: 
         print('Preencha os campos corretamente!')
 
+#Função responsável por cadastrar um piloto no arquivo pilots.json
+#caso os dados tenham sido preenchidos corretamente
 def pilots():
     if(ep1.get()!='' and ep2.get()!='' and ep3.get()!=''):
         ret = a.checkPilots(ep1.get())
@@ -78,6 +92,8 @@ def pilots():
     else: 
         print('Preencha os campos corretamente!')
 
+#Função responsável por cadastrar um circuito no arquivo circuits.json
+#caso os dados tenham sido preenchidos corretamente
 def circuits():
     if(e51.get()!='' and c51.get()!='' and e53.get()!=''):
         ret = a.checkCircuits(e51.get())
@@ -88,13 +104,14 @@ def circuits():
     else: 
         print('Preencha os campos corretamente!')
 
+#Função responsável por cadastrar uma corrida no arquivo race.json
 def races(): 
     if(e61.get()!='' and e62.get()!=''):
         a.signupRaces(e61.get(), e62.get(), c60.get(), c61.get(), c62.get())        
     else: 
         print('Preencha os campos corretamente!')
 
-
+#Função responsável por enviar os dados de configuração do RFID para o server
 def sendRfid():
     if(er1.get()!='' and er1.get()!='' and er4.get()!=''):
         dados = er1.get() + ':' + er2.get() + ':' + er3.get() + ':' + er4.get()  +':' + er6.get()
@@ -103,6 +120,7 @@ def sendRfid():
     else:
         print('Preencha o formulário corretamente')
 
+#Função respnsável por dar início à qualificatória
 def qualify():
     file = open('dataBase/race.json', 'r')
     linhas = file.readlines()
@@ -111,6 +129,7 @@ def qualify():
     else:
         print('Cadastre uma partida primeiro!')
 
+#Função responsável por dar início à corrida
 def startRace():
     file = open('dataBase/race.json', 'r')
     linhas = file.readlines()
@@ -119,7 +138,13 @@ def startRace():
     else:
         print('Cadastre uma partida primeiro!')
 
+#Função responsável por criar os componentes da tela de corrida, sendo eles o frame principal,
+#os subframes para organizar melhor os componentes, além dos Labels, TextInputs e Buttons
 def createRaceWidgets():
+    c.piloto1['time']=0
+    c.piloto2['time']=0
+    c.piloto1['voltas']=0
+    c.piloto2['voltas']=0
     global raceScreen
     raceScreen = Frame(s)    
     rs1 = Frame(raceScreen)
@@ -140,13 +165,13 @@ def createRaceWidgets():
     lr3 = Label(rs4, text = 'Nº de Voltas: '+settings['voltas'], font = 'verdana 11 bold')
     lr3.grid(row = 0, column = 1, padx = 20)
 
-    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
+    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Volta']
 
     for i in range(len(colunas)):
         coluna = Label(rs2, text = colunas[i], font=('Arial',16,'bold'))
         coluna.grid(row=0, column = i, padx = 17)
 
-    t = Table(rs3, c.piloto1, c.piloto2)
+    t = RaceTable(rs3, c.piloto1, c.piloto2)
 
     rs1.pack(pady = 18)
     rs4.pack(pady = 13)
@@ -154,14 +179,124 @@ def createRaceWidgets():
     rs3.pack()
     screen5.pack_forget()
     raceScreen.pack()
+#Inicia uma thread responsável por atualizar a tabela da corrida periodicamente
     thread.start_new_thread(updateRaceTable, (rs3, c.piloto1, c.piloto2))
+#Inicia a thread que recebe os dados do servidor
     thread.start_new_thread(c.readerRace, (settings['voltas'],))
 
+#Função responsável por criar os componentes da tela de Qualificatória
+def createQualifyWidgets():
+    c.piloto1['time']=0
+    c.piloto2['time']=0
+    c.piloto1['voltas']=0
+    c.piloto2['voltas']=0
+    c.piloto1['bestTime']=100
+    c.piloto2['bestTime']=100
+    global qualifyScreen
+    qualifyScreen = Frame(s)    
+    qs1 = Frame(qualifyScreen)
+    qs2 = Frame(qualifyScreen)
+    qs3 = Frame(qualifyScreen)
+    qs4 = Frame(qualifyScreen)
+
+    global settings
+    settings = a.getRaceSettings()
+    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+
+    lq1 = Label(qs1, text = 'QUALIFICATÓRIA', font = 'verdana 16 bold')
+    lq1.pack()
+
+    lq2 = Label(qs4, text = 'Pista: '+settings['pista'], font = 'verdana 11 bold')
+    lq2.grid(row=0, column = 0, padx = 20)
+
+    lq3 = Label(qs4, text = 'Duração: '+settings['duracao'], font = 'verdana 11 bold')
+    lq3.grid(row = 0, column = 1, padx = 20)
+
+    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
+
+    for i in range(len(colunas)):
+        coluna = Label(qs2, text = colunas[i], font=('Arial',16,'bold'))
+        coluna.grid(row=0, column = i, padx = 17)
+
+    t = Table(qs3, c.piloto1, c.piloto2)
+
+    qs1.pack(pady = 18)
+    qs4.pack(pady = 13)
+    qs2.pack()
+    qs3.pack()
+    screen5.pack_forget()
+    qualifyScreen.pack()
+#inicia a thread que atualiza a tabela em tempo de execução
+    thread.start_new_thread(updateTable, (qs3, c.piloto1, c.piloto2))
+#Inicia a thread que recebe os dados das tags enviados pelo server
+    thread.start_new_thread(c.readerQualify, (settings['duracao'],))
+#Inicia a thread que atualiza o tempo percorrido na tela
+    thread.start_new_thread(counter, (qualifyScreen,))
+    
+#Função que recebe um frame como parâmetro e atualiza nesse frame os dados e uma tabela periodicamente
+def updateTable(frame, piloto1, piloto2):
+    cont = 0
+    while cont < int(settings['duracao'])+2:
+        time.sleep(2)
+        t = Table(frame, c.piloto1, c.piloto2)    
+        cont +=2   
+    print('update qualify table is end') 
+
+#Volta da tela de corrida para as telas de configuração
+def raceReturn():
+    raceScreen.destroy()
+    screen5.pack()
+
+#Função que recebe um frame como parâmetro e atualiza nesse frame os dados e uma tabela periodicamente
+def updateRaceTable(frame, piloto1, piloto2):
+    while True:
+        time.sleep(2)
+        t = RaceTable(frame, c.piloto1, c.piloto2)    
+        if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])):
+            break
+    
+    butR = Button(raceScreen, text = 'Voltar', width = 12, command = raceReturn, font = 'verdana 10 bold')
+    butR.pack(pady = 15)
+    print('update race table is end')    
+
+#Retorna da tela de Qualificatória para as telas de configuração
+def qualifyReturn():
+    qualifyScreen.destroy()
+    screen5.pack()
+
+#Função que faz uma contagem baseado na duração da qualificatória utilizando o tempo do S.O.
+def counter(frame):
+    cont = 0
+    a = datetime.fromtimestamp(time.time())
+    while cont<int(settings['duracao']):
+        tempo = datetime.fromtimestamp(time.time()) - a
+        cont = str(tempo).split(':')
+        num = cont[2].split('.')
+        cont = float(cont[2])
+        f = Frame(frame)
+        lcounter = Label(f, text = 'TEMPO PERCORRIDO: '+num[0], font = 'verdana 14 bold')
+        lcounter.pack()
+        f.pack(pady = 15)
+        print(tempo)
+        time.sleep(1)
+        f.destroy()
+    f = Frame(frame)
+    lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
+    lcounter.pack(pady = 15)
+    butV = Button(f, text = 'Voltar', command = qualifyReturn, width =12, font = 'verdana 10 bold')
+    butV.pack()
+    f.pack()
+
+#Instancias da classe tk que é a biblioteca usada para desenvolver a interface, 
+#da classe cliente e da classe api
 s = Tk()
 s.title('Autorama')
 s.geometry('680x570')
 c = client()
 a = api()
+
+#As linhas de código abaixo em sua maioria dizem respeito a instâncias de componentes de tela,
+#como botões, labels, inputs e etc, despensa explicações
 
 #Componentes da tela de configuração do RFID e servidor
 
@@ -460,92 +595,6 @@ frame63.pack(pady = 10)
 frame65.pack()
 frame64.pack(pady = 4)
 
-def createQualifyWidgets():
-    global qualifyScreen
-    qualifyScreen = Frame(s)    
-    qs1 = Frame(qualifyScreen)
-    qs2 = Frame(qualifyScreen)
-    qs3 = Frame(qualifyScreen)
-    qs4 = Frame(qualifyScreen)
-
-    global settings
-    settings = a.getRaceSettings()
-    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
-
-    lq1 = Label(qs1, text = 'QUALIFICATÓRIA', font = 'verdana 16 bold')
-    lq1.pack()
-
-    lq2 = Label(qs4, text = 'Pista: '+settings['pista'], font = 'verdana 11 bold')
-    lq2.grid(row=0, column = 0, padx = 20)
-
-    lq3 = Label(qs4, text = 'Duração: '+settings['duracao'], font = 'verdana 11 bold')
-    lq3.grid(row = 0, column = 1, padx = 20)
-
-    colunas = ['Pos.', 'Piloto', 'Time', 'Tempo', 'Record', 'Volta']
-
-    for i in range(len(colunas)):
-        coluna = Label(qs2, text = colunas[i], font=('Arial',16,'bold'))
-        coluna.grid(row=0, column = i, padx = 17)
-
-    t = Table(qs3, c.piloto1, c.piloto2)
-
-    qs1.pack(pady = 18)
-    qs4.pack(pady = 13)
-    qs2.pack()
-    qs3.pack()
-    screen5.pack_forget()
-    qualifyScreen.pack()
-    thread.start_new_thread(updateTable, (qs3, c.piloto1, c.piloto2))
-    thread.start_new_thread(c.readerQualify, (settings['duracao'],))
-    thread.start_new_thread(counter, (qualifyScreen,))
-    
-
-def updateTable(frame, piloto1, piloto2):
-    cont = 0
-    while cont < int(settings['duracao'])+2:
-        time.sleep(2)
-        t = Table(frame, c.piloto1, c.piloto2)    
-        cont +=2    
-
-def raceReturn():
-    raceScreen.destroy()
-    screen5.pack()
-
-def updateRaceTable(frame, piloto1, piloto2):
-    while True:
-        time.sleep(2)
-        t = Table(frame, c.piloto1, c.piloto2)    
-        if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])):
-            break
-    
-    butR = Button(raceScreen, text = 'Voltar', width = 12, command = raceReturn, font = 'verdana 10 bold')
-    butR.pack(pady = 15)
-    print('update table is')    
-
-def qualifyReturn():
-    qualifyScreen.destroy()
-    screen5.pack()
-
-def counter(frame):
-    cont = 0
-    a = datetime.fromtimestamp(time.time())
-    while cont<int(settings['duracao']):
-        tempo = datetime.fromtimestamp(time.time()) - a
-        cont = str(tempo).split(':')
-        num = cont[2].split('.')
-        cont = float(cont[2])
-        f = Frame(frame)
-        lcounter = Label(f, text = 'TEMPO PERCORRIDO: '+num[0], font = 'verdana 14 bold')
-        lcounter.pack()
-        f.pack(pady = 15)
-        print(tempo)
-        time.sleep(1)
-        f.destroy()
-    f = Frame(frame)
-    lcounter = Label(f, text = 'FIM', font = 'verdana 14 bold')
-    lcounter.pack(pady = 15)
-    butV = Button(f, text = 'Voltar', command = qualifyReturn, width =12, font = 'verdana 10 bold')
-    butV.pack()
-    f.pack()   
+   
 
 s.mainloop()

@@ -3,8 +3,11 @@ import time
 from datetime import datetime, timedelta
 import json
 
+#Essa classe é responsável por estabelecer uma conexão com o server e criar uma forma 
+#de comunicação com o mesmo(protocolo)
 class client():
 
+#Método construtor
     def __init__(self):
         self.port = ''
         self.host = ''
@@ -12,7 +15,7 @@ class client():
         self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100, 'pos': '', 'voltas': 0}
         self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100, 'pos': '', 'voltas': 0}
         
-
+#Método que se conecta com o server
     def connect(self, porta, ip):
         self.port = int(porta)
         if (ip == ''):
@@ -22,23 +25,28 @@ class client():
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((self.host, self.port))
 
+#Método que converte tags concatenadas em uma lista de tags
     def stringToTag(self, strn):
         strn = strn.split(':')
         del(strn[-1])
         return strn
 
+#Método que solicita uma leitura das tags
     def get(self):
         self.s.send(bytes('GET autorama/cars:', 'utf-8'))
         msg = self.s.recv(1024).decode()
         #tagsList = self.stringToTag(msg)
         return msg
 
+#Método que envia para o servidor os dados do RFID
     def post(self, st):
         l = ['POST autorama/rfid/settings']
         l.append(st)
         x = ':'.join(l)
         self.s.send(bytes(x, 'utf-8'))
-    
+
+#Função responsável por ficar recebendo dados do servidor e os transformar em informação dos pilotos participantes
+# da qualificatória, até o términio da mesma    
     def readerQualify(self, d):
         route = 'GET autorama/startQualify:' + str(d) + ':' + self.piloto1['epc'] + ':' + self.piloto2['epc']
         self.s.send(bytes(route, 'utf-8'))
@@ -94,12 +102,11 @@ class client():
                 
             elif info[1] == 'q':
                     break
-        
-        self.piloto1 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100.5, 'pos': '', 'voltas': 0}
-        self.piloto2 = {'epc': '','nome': '', 'equipe': '', 'time': 0, 'bestTime': 100.5, 'pos': '', 'voltas': 0}
         print('Fim da qualificação')
         return
 
+#Função que recebe nomes de pilotos, busca as tags dos mesmos e preenche esses dados nos dicionários respectivos de
+#cada piloto
     def getTagPilot(self, nome, nome2):
         file = open('dataBase/pilots.json', 'r')
         linhas = file.readlines()
@@ -115,10 +122,12 @@ class client():
                 self.piloto2['equipe'] = b['equipe']
         file.close()
         linhas.clear()    
-    
+#Encerra o server
     def clc(self):        
         self.s.send(bytes('q', 'utf-8'))
 
+#Função responsável por ficar recebendo dados do server e os transformar em informação dos pilotos participantes
+# da corrida, até o términio da mesma
     def readerRace(self, v):
         route = 'GET autorama/startRace:' + str(v) + ':' + self.piloto1['epc'] + ':' + self.piloto2['epc']
         self.s.send(bytes(route, 'utf-8'))
@@ -170,7 +179,7 @@ class client():
                     timeLap = str(r).split(':')
                     self.piloto2['time'] += float(timeLap[2])
                     if(self.piloto1['voltas']==self.piloto2['voltas']):
-                        if (float(self.piloto1['time'])<float(self.piloto2['time'])):
+                        if (float(self.piloto1['time'])<=float(self.piloto2['time'])):
                             self.piloto1['pos'] = '1'
                             self.piloto2['pos'] = '2'
                         else:
@@ -191,6 +200,7 @@ class client():
                 
             elif info[1] == 'q':
                     break
-        
+        self.piloto1['bestTime']=100
+        self.piloto2['bestTime']=100
         print('Fim da Corrida')
         return

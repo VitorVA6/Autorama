@@ -37,7 +37,8 @@ def recomendado():
     er2.insert(0, 'NA2')
     er3.insert(0, '1')
     er4.insert(0, 'GEN2')
-    er6.insert(0, '1100')
+    er5.insert(0, '230400')
+    er6.insert(0, '1500')
 
 #Essa função recebe um IP e uma porta do server e faz a conexão 
 def connectServer():
@@ -114,7 +115,7 @@ def races():
 #Função responsável por enviar os dados de configuração do RFID para o server
 def sendRfid():
     if(er1.get()!='' and er1.get()!='' and er4.get()!=''):
-        dados = er1.get() + ':' + er2.get() + ':' + er3.get() + ':' + er4.get()  +':' + er6.get()
+        dados = er1.get() + ':' + er2.get() + ':' + er3.get() + ':' + er4.get()  +':' + er6.get()+':' + er5.get()
         c.post(dados)
         dados = ''
     else:

@@ -188,6 +188,7 @@ def post(data):
         rfid.append([int(dataList[3])])
         rfid.append(dataList[4])
         rfid.append(int(dataList[5]))
+        rfid.append(int(dataList[6]))
         print(rfid)
     else: 
         return

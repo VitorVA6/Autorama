@@ -11,7 +11,7 @@ rfid = []
 raceTags = []
 tagBuffer = []
 restAPI = {'method':'', 'route':''}
-r = True
+reader = True
 voltaCarro1 = -1
 voltaCarro2 = -1    
 
@@ -30,9 +30,9 @@ def addBufferRace(carro, tempo, volta):
 #Função que ordena o raspberry realizar leituras consecutivas em um daterminado intervalo de tempo
 def readerThreadRfid():
     global reader
-    reader = mercury.Reader("tmr:///dev/ttyUSB0", baudrate=230400)
-    reader.set_region("NA2")
-    reader.set_read_plan([1], "GEN2", read_power=1500)
+    reader = mercury.Reader(rfid[0], baudrate=rfid[5])
+    reader.set_region(rfid[1])
+    reader.set_read_plan(rfid[2], rfid[3], read_power=rfid[4])
     reader.start_reading(lambda tag: tagFilter(tag.epc.decode(), datetime.fromtimestamp(tag.timestamp)))
     time.sleep(40)    
     print('Thread encerrada')
@@ -41,6 +41,7 @@ def readerThreadRfid():
 #Função que vai enviar para o cliente dados obtidos pelo leito periodicamente,
 #sendo o consumidor da corrida
 def readerRace(data):
+    global reader
     global voltaCarro1
     global voltaCarro2
     voltaCarro1 = -1
@@ -122,17 +123,17 @@ def tagFilter(tag, tempo):
     global voltaCarro2
     if(tag not in raceTags and tag == tags[0]):
         voltaCarro1+=1
-        addBuffer(tags[0], tempo, voltaCarro1)
+        thread.start_new_thread(addBuffer, (tags[0], tempo, voltaCarro1))
     if(tag not in raceTags and tag == tags[1]):
         voltaCarro2+=1
-        addBuffer(tags[1], tempo, voltaCarro2)  
+        thread.start_new_thread(addBuffer, (tags[1], tempo, voltaCarro2))
 
 #Função que recebe o tempo de duração da qualificatória como parâmetro, instancia o leitor
 # e realiza leituras consecutivas até o fim da qualificatória
 def readerThread(tempo):    
-    reader = mercury.Reader("tmr:///dev/ttyUSB0", baudrate=230400)
-    reader.set_region("NA2")
-    reader.set_read_plan([1], "GEN2", read_power=1500)
+    reader = mercury.Reader(rfid[0], baudrate=rfid[5])
+    reader.set_region(rfid[1])
+    reader.set_read_plan(rfid[2], rfid[3], read_power=rfid[4])
     reader.start_reading(lambda tag: tagFilter(tag.epc.decode(), datetime.fromtimestamp(tag.timestamp)))
     time.sleep(tempo)
     reader.stop_reading()
@@ -187,12 +188,12 @@ def get(data):
     global restAPI
     data = data.split(':')
     if (data[0] =='autorama/cars'):
-        #reader = mercury.Reader(rfid[0])
-        #reader.set_region(rfid[1])
-        #reader.set_read_plan(rfid[2], rfid[3], read_power=rfid[4])
-        #epcs = map(lambda t: t.epc.decode(), reader.read())
-        #tags = list(epcs)
-        #tagsString = tagToString(tags)
+        reader = mercury.Reader(rfid[0])
+        reader.set_region(rfid[1])
+        reader.set_read_plan(rfid[2], rfid[3], read_power=rfid[4])
+        epcs = map(lambda t: t.epc.decode(), reader.read())
+        tag = list(epcs)
+        tagsString = tagToString(tag)
         clientSocket.send(bytes(tags[0], 'utf-8'))
     elif (data[0] == 'autorama/startQualify'):
         readerQualify(restAPI['route'])
@@ -211,6 +212,7 @@ def post(data):
         rfid.append([int(dataList[3])])
         rfid.append(dataList[4])
         rfid.append(int(dataList[5]))
+        rfid.append(int(dataList[6]))
         print(rfid)
     else: 
         return

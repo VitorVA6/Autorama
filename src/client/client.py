@@ -35,8 +35,8 @@ class client():
     def get(self):
         self.s.send(bytes('GET autorama/cars:', 'utf-8'))
         msg = self.s.recv(1024).decode()
-        #tagsList = self.stringToTag(msg)
-        return msg
+        tagsList = self.stringToTag(msg)
+        return tagsList[0]
 
 #Método que envia para o servidor os dados do RFID
     def post(self, st):

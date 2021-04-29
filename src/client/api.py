@@ -150,7 +150,9 @@ class api():
             settings['duracao'] = b['duracao']
             settings['voltas'] = b['voltas']
             settings['piloto1'] = b['piloto1']  
-            settings['piloto2'] = b['piloto2']     
+            settings['piloto2'] = b['piloto2']
+            settings['piloto3'] = b['piloto3']  
+            settings['piloto4'] = b['piloto4']     
         file.close()     
         return settings
 

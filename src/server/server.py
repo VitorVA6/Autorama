@@ -24,6 +24,8 @@ def addBufferRace(carro, tempo, volta):
 def readerThreadRfid(voltas):
     voltaCarro1 = -1
     voltaCarro2 = -1
+    voltaCarro3 = -1
+    voltaCarro4 = -1
     c=0
     while (r):
         if(tags[0] not in raceTags):
@@ -32,6 +34,12 @@ def readerThreadRfid(voltas):
         if(tags[1] not in raceTags):
             voltaCarro2+=1
             thread.start_new_thread(addBufferRace, ('carro2', datetime.fromtimestamp(time.time()), voltaCarro2))
+        if(tags[2] not in raceTags):
+            voltaCarro3+=1
+            thread.start_new_thread(addBufferRace, ('carro3', datetime.fromtimestamp(time.time()), voltaCarro3))
+        if(tags[3] not in raceTags):
+            voltaCarro4+=1
+            thread.start_new_thread(addBufferRace, ('carro4', datetime.fromtimestamp(time.time()), voltaCarro4))
         time.sleep(0.1)
         c+=1
     print('Thread Rfid encerrada')
@@ -44,6 +52,8 @@ def readerRace(data):
     dataList = data.split(':')    
     tags.append(dataList[2])
     tags.append(dataList[3])
+    tags.append(dataList[4])
+    tags.append(dataList[5])
     info = str(datetime.fromtimestamp(time.time()))
     clientSocket.send(bytes(info, 'utf-8'))
     thread.start_new_thread(readerThreadRfid, (int(dataList[1]),))
@@ -61,6 +71,17 @@ def readerRace(data):
             print('enviado2')
             tagBuffer[1]['sent'] = 'true'
         
+        if(len(tagBuffer)>2 and tagBuffer[2]['sent'] == 'false'):
+            info =  raceTags[2]+ '/'+ str(tagBuffer[2]['time'])+ '/'+ str(tagBuffer[2]['volta'])
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado3')
+            tagBuffer[2]['sent'] = 'true'        
+        if(len(tagBuffer)>3 and tagBuffer[3]['sent'] == 'false'):
+            info =  raceTags[3]+ '/'+ str(tagBuffer[3]['time'])+ '/'+ str(tagBuffer[3]['volta'])
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado4')
+            tagBuffer[3]['sent'] = 'true'
+        
         if (len(tagBuffer)>0):
             time1 = datetime.fromtimestamp(time.time()) - tagBuffer[0]['time']
             time2 = timedelta(seconds = 6)
@@ -69,8 +90,9 @@ def readerRace(data):
                 del(raceTags[0])
                 print('deletado')
         
-        if (len(tagBuffer)>1):
-            if(tagBuffer[0]['volta']>=int(dataList[1]) and tagBuffer[1]['volta']>=int(dataList[1])):
+        if (len(tagBuffer)>3):
+            if(tagBuffer[0]['volta']>=int(dataList[1]) and tagBuffer[1]['volta']>=int(dataList[1])and\
+                tagBuffer[2]['volta']>=int(dataList[1]) and tagBuffer[3]['volta']>=int(dataList[1])):
                 tagBuffer.clear()
                 raceTags.clear()
                 tags.clear()
@@ -106,6 +128,8 @@ def readerThread(tempo):
     c=0
     voltaCarro1 = -1
     voltaCarro2 = -1
+    voltaCarro3 = -1
+    voltaCarro4 = -1
     while c<tempo*10:
         if(tags[0] not in raceTags):
             voltaCarro1+=1
@@ -113,6 +137,12 @@ def readerThread(tempo):
         if(tags[1] not in raceTags):
             voltaCarro2+=1
             thread.start_new_thread(addBuffer, ('carro2', datetime.fromtimestamp(time.time()), str(voltaCarro2)))
+        if(tags[2] not in raceTags):
+            voltaCarro3+=1
+            thread.start_new_thread(addBuffer, ('carro3', datetime.fromtimestamp(time.time()), str(voltaCarro3)))
+        if(tags[3] not in raceTags):
+            voltaCarro4+=1
+            thread.start_new_thread(addBuffer, ('carro4', datetime.fromtimestamp(time.time()), str(voltaCarro4)))
         time.sleep(0.1)
         c+=1
     print('Thread encerrada')
@@ -123,6 +153,8 @@ def readerQualify(data):
     dataList = data.split(':')    
     tags.append(dataList[2])
     tags.append(dataList[3])
+    tags.append(dataList[4])
+    tags.append(dataList[5])
     info = str(datetime.fromtimestamp(time.time()))
     clientSocket.send(bytes(info, 'utf-8'))
     thread.start_new_thread(readerThread, (int(dataList[1]),))
@@ -138,6 +170,16 @@ def readerQualify(data):
             clientSocket.send(bytes(info, 'utf-8')) 
             print('enviado2')
             tagBuffer[1]['sent'] = 'true'
+        if(len(tagBuffer)>2 and tagBuffer[2]['sent'] == 'false'):
+            info =  raceTags[2]+ '/'+ str(tagBuffer[2]['time'])+ '/'+ tagBuffer[2]['volta']
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado3')
+            tagBuffer[2]['sent'] = 'true'        
+        if(len(tagBuffer)>3 and tagBuffer[3]['sent'] == 'false'):
+            info =  raceTags[3]+ '/'+ str(tagBuffer[3]['time'])+ '/'+ tagBuffer[3]['volta']
+            clientSocket.send(bytes(info, 'utf-8')) 
+            print('enviado4')
+            tagBuffer[3]['sent'] = 'true'
         time.sleep(0.1)
         if (len(tagBuffer)>0):
             time1 = datetime.fromtimestamp(time.time()) - tagBuffer[0]['time']

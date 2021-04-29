@@ -144,8 +144,12 @@ def startRace():
 def createRaceWidgets():
     c.piloto1['time']=0
     c.piloto2['time']=0
+    c.piloto3['time']=0
+    c.piloto4['time']=0
     c.piloto1['voltas']=0
     c.piloto2['voltas']=0
+    c.piloto3['voltas']=0
+    c.piloto4['voltas']=0
     global raceScreen
     raceScreen = Frame(s)    
     rs1 = Frame(raceScreen)
@@ -155,7 +159,7 @@ def createRaceWidgets():
 
     global settings
     settings = a.getRaceSettings()
-    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+    c.getTagPilot(settings['piloto1'], settings['piloto2'], settings['piloto3'], settings['piloto4'])    
 
     lr1 = Label(rs1, text = 'CORRIDA', font = 'verdana 16 bold')
     lr1.pack()
@@ -172,7 +176,7 @@ def createRaceWidgets():
         coluna = Label(rs2, text = colunas[i], font=('Arial',16,'bold'))
         coluna.grid(row=0, column = i, padx = 17)
 
-    t = RaceTable(rs3, c.piloto1, c.piloto2)
+    t = RaceTable(rs3, c.piloto1, c.piloto2, c.piloto3, c.piloto4)
 
     rs1.pack(pady = 18)
     rs4.pack(pady = 13)
@@ -189,10 +193,16 @@ def createRaceWidgets():
 def createQualifyWidgets():
     c.piloto1['time']=0
     c.piloto2['time']=0
+    c.piloto3['time']=0
+    c.piloto4['time']=0
     c.piloto1['voltas']=0
     c.piloto2['voltas']=0
+    c.piloto3['voltas']=0
+    c.piloto4['voltas']=0
     c.piloto1['bestTime']=100
     c.piloto2['bestTime']=100
+    c.piloto3['bestTime']=100
+    c.piloto4['bestTime']=100
     global qualifyScreen
     qualifyScreen = Frame(s)    
     qs1 = Frame(qualifyScreen)
@@ -202,7 +212,7 @@ def createQualifyWidgets():
 
     global settings
     settings = a.getRaceSettings()
-    c.getTagPilot(settings['piloto1'], settings['piloto2'])    
+    c.getTagPilot(settings['piloto1'], settings['piloto2'], settings['piloto3'], settings['piloto4'])    
 
     lq1 = Label(qs1, text = 'QUALIFICATÓRIA', font = 'verdana 16 bold')
     lq1.pack()
@@ -219,7 +229,7 @@ def createQualifyWidgets():
         coluna = Label(qs2, text = colunas[i], font=('Arial',16,'bold'))
         coluna.grid(row=0, column = i, padx = 17)
 
-    t = Table(qs3, c.piloto1, c.piloto2)
+    t = Table(qs3, c.piloto1, c.piloto2, c.piloto3, c.piloto4)
 
     qs1.pack(pady = 18)
     qs4.pack(pady = 13)
@@ -239,7 +249,7 @@ def updateTable(frame, piloto1, piloto2):
     cont = 0
     while cont < int(settings['duracao'])+2:
         time.sleep(2)
-        t = Table(frame, c.piloto1, c.piloto2)    
+        t = Table(frame, c.piloto1, c.piloto2, c.piloto3, c.piloto4)    
         cont +=2   
     print('update qualify table is end') 
 
@@ -252,8 +262,9 @@ def raceReturn():
 def updateRaceTable(frame, piloto1, piloto2):
     while True:
         time.sleep(2)
-        t = RaceTable(frame, c.piloto1, c.piloto2)    
-        if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])):
+        t = RaceTable(frame, c.piloto1, c.piloto2, c.piloto3, c.piloto4)    
+        if (c.piloto1['voltas']>=int(settings['voltas']) and c.piloto2['voltas']>=int(settings['voltas'])\
+            and c.piloto3['voltas']>=int(settings['voltas']) and c.piloto4['voltas']>=int(settings['voltas'])):
             break
     
     butR = Button(raceScreen, text = 'Voltar', width = 12, command = raceReturn, font = 'verdana 10 bold')
@@ -272,10 +283,11 @@ def counter(frame):
     while cont<int(settings['duracao']):
         tempo = datetime.fromtimestamp(time.time()) - a
         cont = str(tempo).split(':')
-        num = cont[2].split('.')
-        cont = float(cont[2])
+        num1 = cont[1]
+        num2 = cont[2].split('.')
+        cont = float(num1)*60 + float(cont[2])
         f = Frame(frame)
-        lcounter = Label(f, text = 'TEMPO PERCORRIDO: '+num[0], font = 'verdana 14 bold')
+        lcounter = Label(f, text = 'TEMPO PERCORRIDO: '+num1+':'+num2[0], font = 'verdana 14 bold')
         lcounter.pack()
         f.pack(pady = 15)
         print(tempo)
@@ -563,7 +575,6 @@ l64.grid(row = 0, column = 2)
 
 circuitos = a.getCircuits()
 c60 = ttk.Combobox(frame62, values = circuitos, width = 16)
-c60.set(circuitos[0])
 c60.grid(row = 1, column = 2, pady = 10, padx = 20)
 
 l66 = Label(frame62, text = 'Pilotos', font = 'verdana 11 bold')
@@ -571,11 +582,9 @@ l66.grid(row = 2, sticky = W)
 
 pilotos = a.getPilots()
 c61 = ttk.Combobox(frame62, values = pilotos, width = 10)
-c61.set(pilotos[2])
 c61.grid(row = 3, sticky = W, pady = 10, column = 0)
 
 c62 = ttk.Combobox(frame62, values = pilotos, width = 10)
-c62.set(pilotos[3])
 c62.grid(row = 3, sticky = W, pady = 10, column = 1)
 
 b50 = Button(frame63, text = 'Voltar', width = 12, font = 'verdana 10 bold', command = circuitos_pilotos)

@@ -1,6 +1,6 @@
 import json
 
-#Classe responsável por realizar os cadastros nos arquivos json
+#Classe responsável por realizar os cadastros nos arquivos json.
 class api():
 #construtor da classe
     def __init__(self):
